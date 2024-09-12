@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './App.css';
 
 function App() {
@@ -14,18 +15,24 @@ function App() {
 
   // Fetch all countries on initial render
   useEffect(() => {
-    fetch('https://crio-location-selector.onrender.com/countries')
-      .then(response => response.json())
-      .then(data => setCountries(data.countries || []))  // Safely handle undefined data
+    console.log("Hello world")
+    axios.get('https://crio-location-selector.onrender.com/countries')
+      .then(response => {
+        console.log('Countries data:', response); // Log countries data
+        setCountries(response.data || []);
+      })
       .catch(error => console.error('Error fetching countries:', error));
   }, []);
 
   // Fetch states when a country is selected
   useEffect(() => {
     if (selectedCountry) {
-      fetch(`https://crio-location-selector.onrender.com/country=${selectedCountry}/states`)
-        .then(response => response.json())
-        .then(data => setStates(data.states || []))  // Safely handle undefined data
+      console.log('Selected Country:', selectedCountry); // Log selected country
+      axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/states`)
+        .then(response => {
+          console.log('States data:', response); // Log states data
+          setStates(response.data || []);
+        })
         .catch(error => console.error('Error fetching states:', error));
     }
   }, [selectedCountry]);
@@ -33,16 +40,21 @@ function App() {
   // Fetch cities when a state is selected
   useEffect(() => {
     if (selectedState) {
-      fetch(`https://crio-location-selector.onrender.com/country=${selectedCountry}/state=${selectedState}/cities`)
-        .then(response => response.json())
-        .then(data => setCities(data.cities || []))  // Safely handle undefined data
+      console.log('Selected State:', selectedState); // Log selected state
+      axios.get(`https://crio-location-selector.onrender.com/country=${selectedCountry}/state=${selectedState}/cities`)
+        .then(response => {
+          console.log('Cities data:', response); // Log cities data
+          setCities(response.data || []);
+        })
         .catch(error => console.error('Error fetching cities:', error));
     }
   }, [selectedState]);
 
   // Handle the selection of country, state, and city
   const handleCountryChange = (e) => {
-    setSelectedCountry(e.target.value);
+    const selected = e.target.value;
+    console.log('Country Changed:', selected); // Log country change
+    setSelectedCountry(selected);
     setSelectedState(''); // Reset state and city
     setSelectedCity('');
     setStates([]);
@@ -51,15 +63,19 @@ function App() {
   };
 
   const handleStateChange = (e) => {
-    setSelectedState(e.target.value);
+    const selected = e.target.value;
+    console.log('State Changed:', selected); // Log state change
+    setSelectedState(selected);
     setSelectedCity('');
     setCities([]);
     setSelectionMessage('');
   };
 
   const handleCityChange = (e) => {
-    setSelectedCity(e.target.value);
-    setSelectionMessage(`You Selected ${e.target.value}, ${selectedState}, ${selectedCountry}`);
+    const selected = e.target.value;
+    console.log('City Changed:', selected); // Log city change
+    setSelectedCity(selected);
+    setSelectionMessage(`You Selected ${selected}, ${selectedState}, ${selectedCountry}`);
   };
 
   return (
@@ -67,7 +83,7 @@ function App() {
       <h2>Select Location</h2>
 
       {/* Country Dropdown */}
-      <div>
+      <div className="dropdown">
         <label htmlFor="country">Country: </label>
         <select id="country" value={selectedCountry} onChange={handleCountryChange}>
           <option value="">Select Country</option>
@@ -80,7 +96,7 @@ function App() {
       </div>
 
       {/* State Dropdown */}
-      <div>
+      <div className="dropdown">
         <label htmlFor="state">State: </label>
         <select
           id="state"
@@ -98,7 +114,7 @@ function App() {
       </div>
 
       {/* City Dropdown */}
-      <div>
+      <div className="dropdown">
         <label htmlFor="city">City: </label>
         <select
           id="city"
@@ -116,7 +132,7 @@ function App() {
       </div>
 
       {/* Display the selected location */}
-      {selectionMessage && <p>{selectionMessage}</p>}
+      {selectionMessage && <p className="selection-message">{selectionMessage}</p>}
     </div>
   );
 }
