@@ -13,7 +13,6 @@ function App() {
 
   const [selectionMessage, setSelectionMessage] = useState('');
 
-  // Fetch all countries on initial render
   useEffect(() => {
     console.log('Hello world');
     axios
